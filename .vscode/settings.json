@@ -1,0 +1,10 @@
+{
+    "mplab.clangd.compileCommandsDir": "${workspaceFolder}\\_build\\Steering_FW\\default",
+    "mplab.clangd.path": "c:\\Program Files\\Microchip\\xc32\\v5.00\\bin\\xc32-clangd.exe",
+    "memory-inspector.debugTypes": [
+        "arm-debugger",
+        "embedded-debug",
+        "gdb",
+        "mplab-core-da"
+    ]
+}
