@@ -25,9 +25,10 @@
 #include <stddef.h>                     // Defines NULL
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
-#include <stdint.h>
-#include <string.h>
 #include "definitions.h"                // SYS function prototypes
+
+#if 0
+/* Previous bring-up test application retained for reference. */
 
 /*
  * Quick steering wheel hardware test firmware.
@@ -41,6 +42,7 @@
 #define TEST_LED_COUNT                   9U
 #define TEST_CAN_TX_ID                   0x321U
 #define TEST_LOOP_DELAY_MS               10U
+#define TEST_HEARTBEAT_HALF_PERIOD_MS    500U
 #define TEST_INPUT_ACTIVE_LOW            true
 
 /* WS2812 timings are approximate for 48 MHz CPU clock. */
@@ -94,21 +96,12 @@ static void BusyNopDelay(uint32_t cycles)
 
 static void DelayUs(uint32_t us)
 {
-  /* 48 cycles/us at 48 MHz; each loop iteration costs several cycles. */
-  while (us > 0U)
-  {
-    BusyNopDelay(12U);
-    us--;
-  }
+  SYSTICK_DelayUs(us);
 }
 
 static void DelayMs(uint32_t ms)
 {
-  while (ms > 0U)
-  {
-    DelayUs(1000U);
-    ms--;
-  }
+  SYSTICK_DelayMs(ms);
 }
 
 static bool ReadInputPin(PORT_PIN pin)
@@ -158,12 +151,12 @@ static uint8_t ReadEncoderNibble(const PORT_PIN encoderPins[TEST_ENCODER_BITS])
 
 static inline void WsPinHigh(void)
 {
-  PORT_PinSet(g_ws2812DataPin);
+  GPIO_WS2812B_Set();
 }
 
 static inline void WsPinLow(void)
 {
-  PORT_PinClear(g_ws2812DataPin);
+  GPIO_WS2812B_Clear();
 }
 
 static void WS2812_SendBit(bool one)
@@ -285,10 +278,15 @@ static void ConfigureTestPins(void)
   if (g_ws2812DataPin != PORT_PIN_NONE)
   {
     PORT_PinGPIOConfig(g_ws2812DataPin);
-    PORT_PinOutputEnable(g_ws2812DataPin);
+    GPIO_WS2812B_Clear();
+    GPIO_WS2812B_OutputEnable();
     WsPinLow();
     DelayUs(WS2812_RESET_US);
   }
+
+  PORT_PinGPIOConfig(GPIO_HEARTBEAT_PIN);
+  GPIO_HEARTBEAT_Clear();
+  GPIO_HEARTBEAT_OutputEnable();
 }
 
 static void SendCanTestFrame(uint16_t switchBits, uint8_t encoder1Nibble, uint8_t encoder2Nibble, uint8_t aliveCounter)
@@ -308,17 +306,6 @@ static void SendCanTestFrame(uint16_t switchBits, uint8_t encoder1Nibble, uint8_
   txMessage.mm = aliveCounter;
   txMessage.dlc = 8U;
 
-  /*
-   * Test payload format (8 bytes):
-   * B0: 0xA0 | alive[3:0]
-   * B1: switch bits [7:0]
-   * B2: switch bits [15:8]
-  * B3: encoder1 nibble [3:0]
-  * B4: encoder2 nibble [3:0]
-   * B5: CAN error low byte
-   * B6: CAN error high byte
-   * B7: fixed test marker 0x5A
-   */
   txMessage.data[0] = (uint8_t)(0xA0U | (aliveCounter & 0x0FU));
   txMessage.data[1] = (uint8_t)(switchBits & 0xFFU);
   txMessage.data[2] = (uint8_t)((switchBits >> 8U) & 0xFFU);
@@ -346,10 +333,13 @@ int main ( void )
 {
   uint8_t alive = 0U;
   uint8_t phase = 0U;
+  uint16_t heartbeatElapsedMs = 0U;
   uint8_t ledColors[TEST_LED_COUNT][3];
 
     /* Initialize all modules */
     SYS_Initialize ( NULL );
+
+  SYSTICK_TimerStart();
 
   ConfigureTestPins();
 
@@ -370,10 +360,46 @@ int main ( void )
     alive++;
     phase++;
 
+    heartbeatElapsedMs = (uint16_t)(heartbeatElapsedMs + TEST_LOOP_DELAY_MS);
+    if (heartbeatElapsedMs >= TEST_HEARTBEAT_HALF_PERIOD_MS)
+    {
+      GPIO_HEARTBEAT_Toggle();
+      heartbeatElapsedMs = 0U;
+    }
+
     /* Maintain state machines of all polled MPLAB Harmony modules. */
         SYS_Tasks ( );
 
     DelayMs(TEST_LOOP_DELAY_MS);
+    }
+
+    /* Execution should not come here during normal operation */
+
+    return ( EXIT_FAILURE );
+}
+#endif
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Main Entry Point
+// *****************************************************************************
+// *****************************************************************************
+
+int main ( void )
+{
+    /* Initialize all modules */
+    SYS_Initialize ( NULL );
+    SYSTICK_TimerStart();
+
+    PORT_PinGPIOConfig(GPIO_HEARTBEAT_PIN);
+    GPIO_HEARTBEAT_Clear();
+    GPIO_HEARTBEAT_OutputEnable();
+
+    while ( true )
+    {
+        GPIO_HEARTBEAT_Toggle();
+        SYSTICK_DelayMs(500);
     }
 
     /* Execution should not come here during normal operation */

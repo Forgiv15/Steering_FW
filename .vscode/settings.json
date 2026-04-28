@@ -6,5 +6,6 @@
         "embedded-debug",
         "gdb",
         "mplab-core-da"
-    ]
+    ],
+    "cmake.sourceDirectory": "D:/SZEN/Steering_FW/cmake/Steering_FW/default"
 }

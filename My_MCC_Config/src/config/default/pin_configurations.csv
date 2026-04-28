@@ -50,4 +50,4 @@ Pin Number,Pin ID,Custom Name,Function,Mode, Direction,Latch,Pull Up,Pull Down,D
 61,PB00,,Available,,,,,,NORMAL
 62,PB01,,Available,,,,,,NORMAL
 63,PB02,,Available,,,,,,NORMAL
-64,PB03,,Available,,,,,,NORMAL
+64,PB03,GPIO_HEARTBEAT,GPIO,Digital,In/Out,Low,,,NORMAL
