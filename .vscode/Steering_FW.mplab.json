@@ -204,7 +204,10 @@
                 "My_MCC_Config/src/config/default/peripheral/mpu/plib_mpu_local.h",
                 "My_MCC_Config/src/config/default/peripheral/mpu/plib_mpu.c",
                 "My_MCC_Config/src/config/default/peripheral/systick/plib_systick.h",
-                "My_MCC_Config/src/config/default/peripheral/systick/plib_systick.c"
+                "My_MCC_Config/src/config/default/peripheral/systick/plib_systick.c",
+                "My_MCC_Config/src/config/default/peripheral/sercom/spi_master/plib_sercom1_spi_master.h",
+                "My_MCC_Config/src/config/default/peripheral/sercom/spi_master/plib_sercom_spi_master_common.h",
+                "My_MCC_Config/src/config/default/peripheral/sercom/spi_master/plib_sercom1_spi_master.c"
             ]
         }
     ]

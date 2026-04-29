@@ -59,6 +59,7 @@
 void Reset_Handler (void);
 void NonMaskableInt_Handler (void);
 void HardFault_Handler (void);
+void SERCOM1_SPI_InterruptHandler (void);
 void CAN0_InterruptHandler (void);
 void TC0_TimerInterruptHandler (void);
 

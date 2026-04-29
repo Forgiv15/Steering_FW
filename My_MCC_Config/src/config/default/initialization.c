@@ -164,6 +164,8 @@ void SYS_Initialize ( void* data )
 
     NVMCTRL_Initialize( );
 
+    SERCOM1_SPI_Initialize();
+
     EVSYS_Initialize();
 
 	SYSTICK_TimerInitialize();

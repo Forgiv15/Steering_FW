@@ -65,15 +65,6 @@
 // *****************************************************************************
 // *****************************************************************************
 
-/*** Macros for GPIO_WS2812B pin ***/
-#define GPIO_WS2812B_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 2U))
-#define GPIO_WS2812B_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 2U))
-#define GPIO_WS2812B_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = ((uint32_t)1U << 2U))
-#define GPIO_WS2812B_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = ((uint32_t)1U << 2U))
-#define GPIO_WS2812B_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 2U))
-#define GPIO_WS2812B_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 2U)) & 0x01U)
-#define GPIO_WS2812B_PIN                  PORT_PIN_PA02
-
 /*** Macros for GPIO_S1 pin ***/
 #define GPIO_S1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 3U))
 #define GPIO_S1_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 3U))
